@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2022/11/08 17:25:46.000.035,=C:\Users\diego\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 17:28:02.000.245,C:\Users\diego\Documents\Embarcadero\Studio\Projects\Unit1.dfm=E:\desenv\Delphi\BDMG\Unit1.dfm</Transaction>
+    <Transaction>2022/11/08 17:28:02.000.245,C:\Users\diego\Documents\Embarcadero\Studio\Projects\Unit1.pas=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 17:28:09.000.056,C:\Users\diego\Documents\Embarcadero\Studio\Projects\Project1.dproj=E:\desenv\Delphi\BDMG\bdmg.dproj</Transaction>
+    <Transaction>2022/11/08 17:32:04.000.165,=E:\desenv\Delphi\BDMG\Unit2.pas</Transaction>
+    <Transaction>2022/11/08 17:32:14.000.142,E:\desenv\Delphi\BDMG\Unit2.pas=E:\desenv\Delphi\BDMG\uCliente.pas</Transaction>
+    <Transaction>2022/11/08 17:32:20.000.315,=E:\desenv\Delphi\BDMG\Unit2.pas</Transaction>
+    <Transaction>2022/11/08 17:32:24.000.851,E:\desenv\Delphi\BDMG\Unit2.pas=E:\desenv\Delphi\BDMG\uFornecedor.pas</Transaction>
+    <Transaction>2022/11/08 17:32:29.000.777,=E:\desenv\Delphi\BDMG\Unit2.pas</Transaction>
+    <Transaction>2022/11/08 17:32:32.000.850,E:\desenv\Delphi\BDMG\Unit2.pas=E:\desenv\Delphi\BDMG\uProduto.pas</Transaction>
+    <Transaction>2022/11/08 18:06:53.000.396,=E:\desenv\Delphi\BDMG\Unit2.pas</Transaction>
+    <Transaction>2022/11/08 18:06:58.000.733,E:\desenv\Delphi\BDMG\Unit2.pas=E:\desenv\Delphi\BDMG\uVenda.pas</Transaction>
+    <Transaction>2022/11/08 19:12:16.000.915,=E:\desenv\Delphi\BDMG\Unit2.pas</Transaction>
+    <Transaction>2022/11/08 19:12:24.000.076,E:\desenv\Delphi\BDMG\Unit2.pas=E:\desenv\Delphi\BDMG\classes\uEntidade.pas</Transaction>
+    <Transaction>2022/11/08 20:44:39.000.246,E:\desenv\Delphi\BDMG\classes\uEntidade.pas=</Transaction>
+    <Transaction>2022/11/08 21:19:52.000.557,=E:\desenv\Delphi\BDMG\uPrincipal.pas</Transaction>
+    <Transaction>2022/11/08 21:21:13.000.716,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 21:21:31.000.349,E:\desenv\Delphi\BDMG\Unit1.dfm=E:\desenv\Delphi\BDMG\uCadastroCliente.dfm</Transaction>
+    <Transaction>2022/11/08 21:21:31.000.349,E:\desenv\Delphi\BDMG\Unit1.pas=E:\desenv\Delphi\BDMG\uCadastroCliente.pas</Transaction>
+    <Transaction>2022/11/08 21:21:34.000.162,=E:\desenv\Delphi\BDMG\Unit2.pas</Transaction>
+    <Transaction>2022/11/08 21:21:39.000.269,E:\desenv\Delphi\BDMG\Unit2.dfm=E:\desenv\Delphi\BDMG\uCadastroFornecedor.dfm</Transaction>
+    <Transaction>2022/11/08 21:21:39.000.269,E:\desenv\Delphi\BDMG\Unit2.pas=E:\desenv\Delphi\BDMG\uCadastroFornecedor.pas</Transaction>
+    <Transaction>2022/11/08 21:21:43.000.887,=E:\desenv\Delphi\BDMG\Unit3.pas</Transaction>
+    <Transaction>2022/11/08 21:21:48.000.437,E:\desenv\Delphi\BDMG\Unit3.dfm=E:\desenv\Delphi\BDMG\uCadastroProduto.dfm</Transaction>
+    <Transaction>2022/11/08 21:21:48.000.437,E:\desenv\Delphi\BDMG\Unit3.pas=E:\desenv\Delphi\BDMG\uCadastroProduto.pas</Transaction>
+    <Transaction>2022/11/08 22:08:22.000.340,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 22:08:28.000.492,E:\desenv\Delphi\BDMG\Unit1.pas=E:\desenv\Delphi\BDMG\uCadastroPadrao.pas</Transaction>
+    <Transaction>2022/11/08 22:08:28.000.492,E:\desenv\Delphi\BDMG\Unit1.dfm=E:\desenv\Delphi\BDMG\uCadastroPadrao.dfm</Transaction>
+    <Transaction>2022/11/08 22:10:52.000.857,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 22:11:00.000.052,E:\desenv\Delphi\BDMG\Unit1.pas=E:\desenv\Delphi\BDMG\classes\uEntidade.pas</Transaction>
+    <Transaction>2022/11/08 22:26:14.000.791,E:\desenv\Delphi\BDMG\uCadastroCliente.pas=</Transaction>
+    <Transaction>2022/11/08 22:28:38.840,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 22:29:13.228,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 22:29:20.277,E:\desenv\Delphi\BDMG\uCadastroCliente.pas=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 22:29:20.277,E:\desenv\Delphi\BDMG\uCadastroCliente.dfm=E:\desenv\Delphi\BDMG\Unit1.dfm</Transaction>
+    <Transaction>2022/11/08 23:36:36.702,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/08 23:36:49.484,E:\desenv\Delphi\BDMG\uCadastroFornecedor.pas=</Transaction>
+    <Transaction>2022/11/08 23:36:53.252,E:\desenv\Delphi\BDMG\uCadastroProduto.pas=</Transaction>
+    <Transaction>2022/11/08 23:36:56.372,E:\desenv\Delphi\BDMG\uCadastroFornecedor.dfm=E:\desenv\Delphi\BDMG\Unit1.dfm</Transaction>
+    <Transaction>2022/11/08 23:36:56.372,E:\desenv\Delphi\BDMG\uCadastroFornecedor.pas=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/09 00:10:07.117,=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/09 00:10:11.133,E:\desenv\Delphi\BDMG\uCadastroProduto.pas=E:\desenv\Delphi\BDMG\Unit1.pas</Transaction>
+    <Transaction>2022/11/09 00:10:11.133,E:\desenv\Delphi\BDMG\uCadastroProduto.dfm=E:\desenv\Delphi\BDMG\Unit1.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
