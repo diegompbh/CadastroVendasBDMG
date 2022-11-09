@@ -139,6 +139,7 @@ inherited frmVenda: TfrmVenda
         ImageIndex = 0
         ParentShowHint = False
         ShowHint = True
+        OnClick = btnNovoItemClick
       end
       object btnEditarItem: TToolButton
         Left = 23
@@ -149,6 +150,7 @@ inherited frmVenda: TfrmVenda
         ImageIndex = 1
         ParentShowHint = False
         ShowHint = True
+        OnClick = btnEditarItemClick
       end
       object btnExcluirItem: TToolButton
         Left = 46
@@ -159,6 +161,7 @@ inherited frmVenda: TfrmVenda
         ImageIndex = 2
         ParentShowHint = False
         ShowHint = True
+        OnClick = btnExcluirItemClick
       end
       object btnSalvarItem: TToolButton
         Left = 69
@@ -180,6 +183,7 @@ inherited frmVenda: TfrmVenda
         ImageIndex = 4
         ParentShowHint = False
         ShowHint = True
+        OnClick = btnCancelarItemClick
       end
     end
     object cmbProduto: TComboBox

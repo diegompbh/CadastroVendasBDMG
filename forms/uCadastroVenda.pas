@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uCadastroPadrao, Vcl.StdCtrls, Math,
-  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin;
+  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ToolWin, System.UITypes;
 
 type
   TfrmVenda = class(TfrmPadrao)
@@ -32,6 +32,14 @@ type
     procedure btnSalvarItemClick(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
     procedure btnEfetivarClick(Sender: TObject);
+    procedure btnExcluirItemClick(Sender: TObject);
+    procedure btnNovoItemClick(Sender: TObject);
+    procedure btnEditarItemClick(Sender: TObject);
+    procedure btnCancelarItemClick(Sender: TObject);
+  private
+    procedure LimparCamposItem;
+    procedure AtivarCamposItem(Ativo: Boolean);
+    procedure PreencherCamposItem;
   protected
     procedure AtivarCampos(Ativo: Boolean); override;
     procedure LimparCampos; override;
@@ -58,18 +66,56 @@ uses uPrincipal, uUtils, uEntidade, uCliente, uProduto, uVenda, uVendaProduto;
 
 { TfrmVenda }
 
-procedure TfrmVenda.btnEfetivarClick(Sender: TObject);
+procedure TfrmVenda.btnCancelarItemClick(Sender: TObject);
 begin
    inherited;
-   if (EntidadeData = nil) or (EntidadeData.Codigo = 0) then
-      Exit;
+   AtivarCamposItem(True);
+   LimparCamposItem;
+   if lsvProdutos.Selected <> nil then
+      PreencherCamposItem;
+end;
 
-   TVenda(Entidade).EfetivarVenda(EntidadeData.Codigo);
-   rgpStatus.ItemIndex := 1;
+procedure TfrmVenda.btnEditarItemClick(Sender: TObject);
+begin
+   inherited;
+   AtivarCamposItem(False);
+end;
+
+procedure TfrmVenda.btnEfetivarClick(Sender: TObject);
+begin
+   if MessageDlg('Confirmar efetivação do registro atual?', mtConfirmation,[mbYes, mbNo], 0) = mrYes then
+   begin
+      if (EntidadeData = nil) or (EntidadeData.Codigo = 0) then
+         Exit;
+
+      TVenda(Entidade).EfetivarVenda(EntidadeData.Codigo);
+      rgpStatus.ItemIndex := 1;
+      AtivarCampos(False);
+   end;
+end;
+
+procedure TfrmVenda.btnExcluirItemClick(Sender: TObject);
+begin
+   if MessageDlg('Confirmar exclusão do registro atual?', mtConfirmation,[mbYes, mbNo], 0) = mrYes then
+   begin
+       lsvProdutos.Selected.StateIndex := 4;
+       AtivarCamposItem(True);
+   end;
+end;
+
+procedure TfrmVenda.btnNovoItemClick(Sender: TObject);
+begin
+   inherited;
+   lsvProdutos.Selected := nil;
+   LimparCamposItem;
+   AtivarCamposItem(False);
 end;
 
 procedure TfrmVenda.btnSalvarClick(Sender: TObject);
 begin
+   if btnSalvarItem.Enabled then
+      btnSalvarItem.Click;
+
    if cmbCliente.ItemIndex = -1 then
    begin
       MessageDlg('É necessário selecionar um cliente!', mtWarning, [mbOk], 0);
@@ -82,6 +128,7 @@ end;
 procedure TfrmVenda.btnSalvarItemClick(Sender: TObject);
 var
    i: Integer;
+   Item: TListItem;
 begin
    if cmbProduto.ItemIndex = -1 then
    begin
@@ -89,7 +136,7 @@ begin
       Abort;
    end;
 
-   if StrToFloatDef(edtPreco.Text, 0) <= 0 then
+   if RemoverMascara(edtPreco.Text) <= 0 then
    begin
       MessageDlg('O valor do produto deve ser maior do que R$ 0,00!', mtWarning, [mbOk], 0);
       Abort;
@@ -115,6 +162,9 @@ begin
 
    for i := 0 to lsvProdutos.Items.Count -1 do
    begin
+      if lsvProdutos.Selected = lsvProdutos.Items[i] then
+         Continue;
+
       if IntToStr(TProdutoData(cmbProduto.Items.Objects[cmbProduto.ItemIndex]).Codigo) = lsvProdutos.Items[i].SubItems[cCodigoProduto] then
       begin
          MessageDlg('Produto já adicionado a esta compra.', mtWarning, [mbOk], 0);
@@ -122,7 +172,27 @@ begin
       end;
    end;
 
-   inherited;
+   if lsvProdutos.Selected = nil then
+   begin
+      Item := lsvProdutos.Items.Add;
+      Item.Caption := EmptyStr;
+      Item.SubItems.Add(EmptyStr);
+      Item.SubItems.Add(IntToStr(TProdutoData(cmbProduto.Items.Objects[cmbProduto.ItemIndex]).Codigo));
+      Item.SubItems.Add(TProdutoData(cmbProduto.Items.Objects[cmbProduto.ItemIndex]).Descricao);
+      Item.SubItems.Add(edtQuantidade.Text);
+      Item.SubItems.Add(FormatFloat('R$ #,##0.00', RemoverMascara(edtPreco.Text)));
+      Item.SubItems.Add(FormatFloat('R$ #,##0.00', StrToIntDef(edtQuantidade.Text, 0) * RemoverMascara(edtPreco.Text)));
+   end
+   else
+   begin
+      Item := lsvProdutos.Selected;
+      Item.SubItems[cProduto]    := TProdutoData(cmbProduto.Items.Objects[cmbProduto.ItemIndex]).Descricao;
+      Item.SubItems[cQuantidade] := edtQuantidade.Text;
+      Item.SubItems[cPreco]      := FormatFloat('R$ #,##0.00', RemoverMascara(edtPreco.Text));
+      Item.SubItems[cTotal]      := FormatFloat('R$ #,##0.00', StrToIntDef(edtQuantidade.Text, 0) * RemoverMascara(edtPreco.Text));
+   end;
+
+   AtivarCamposItem(True);
 end;
 
 procedure TfrmVenda.FormCreate(Sender: TObject);
@@ -164,6 +234,22 @@ begin
    btnExcluir.Enabled  := btnExcluir.Enabled and (rgpStatus.ItemIndex = 0);
    btnEfetivar.Enabled := (not Ativo) and (rgpStatus.ItemIndex = 0);
    cmbCliente.Enabled  := Ativo;
+
+   AtivarCamposItem(btnSalvar.Enabled);
+end;
+
+procedure TfrmVenda.AtivarCamposItem(Ativo: Boolean);
+begin
+   Ativo := Ativo and btnSalvar.Enabled;
+
+   btnNovoItem.Enabled     := Ativo;
+   btnEditarItem.Enabled   := Ativo and (cmbProduto.ItemIndex > -1) and (lsvProdutos.Selected <> nil) and (lsvProdutos.Selected.StateIndex = -1);
+   btnExcluirItem.Enabled  := Ativo and (cmbProduto.ItemIndex > -1) and (lsvProdutos.Selected <> nil) and (lsvProdutos.Selected.StateIndex = -1);
+   btnSalvarItem.Enabled   := (not Ativo) and btnSalvar.Enabled;
+   btnCancelarItem.Enabled := (not Ativo) and btnSalvar.Enabled;
+   cmbProduto.Enabled      := (not Ativo) and btnSalvar.Enabled;
+   edtPreco.ReadOnly       := Ativo or (not btnSalvar.Enabled);
+   edtQuantidade.ReadOnly  := Ativo or (not btnSalvar.Enabled);
 end;
 
 procedure TfrmVenda.LimparCampos;
@@ -172,31 +258,25 @@ begin
    edtDataHora.Clear;
    cmbCliente.ItemIndex := -1;
    cmbCliente.Text := EmptyStr;
+   edtTotal.Clear;
    rgpStatus.ItemIndex := 0;
+   lsvProdutos.Items.Clear;
 
+   LimparCamposItem;
+end;
+
+procedure TfrmVenda.LimparCamposItem;
+begin
    cmbProduto.ItemIndex := -1;
    cmbProduto.Text := EmptyStr;
    edtPreco.Clear;
    edtQuantidade.Clear;
-   lsvProdutos.Items.Clear;
 end;
 
 procedure TfrmVenda.lsvProdutosClick(Sender: TObject);
-var
-   i: Integer;
 begin
    inherited;
-   if lsvProdutos.Selected = nil then
-      Exit;
-
-   for i := 0 to cmbProduto.Items.Count - 1 do
-   begin
-      if TVendaProdutoData(cmbProduto.Items.Objects[i]).Codigo = StrToInt(lsvProdutos.Selected.SubItems[cCodigoProduto]) then
-         cmbProduto.ItemIndex := i;
-   end;
-
-   edtPreco.Text      := lsvProdutos.Selected.SubItems[cPreco];
-   edtQuantidade.Text := lsvProdutos.Selected.SubItems[cQuantidade];
+   PreencherCamposItem;
 end;
 
 procedure TfrmVenda.PreencherCampos;
@@ -237,6 +317,25 @@ begin
    end;
 end;
 
+procedure TfrmVenda.PreencherCamposItem;
+var
+   i: Integer;
+begin
+   if lsvProdutos.Selected = nil then
+      Exit;
+
+   for i := 0 to cmbProduto.Items.Count - 1 do
+   begin
+      if TVendaProdutoData(cmbProduto.Items.Objects[i]).Codigo = StrToInt(lsvProdutos.Selected.SubItems[cCodigoProduto]) then
+         cmbProduto.ItemIndex := i;
+   end;
+
+   edtPreco.Text      := lsvProdutos.Selected.SubItems[cPreco];
+   edtQuantidade.Text := lsvProdutos.Selected.SubItems[cQuantidade];
+
+   AtivarCamposItem(True);
+end;
+
 procedure TfrmVenda.SalvarDados;
 var
    Venda: TVendaData;
@@ -255,19 +354,22 @@ begin
    for i := 0 to lsvProdutos.Items.Count -1 do
    begin
       VendaProduto := TVendaProdutoData.Create;
-      VendaProduto.Codigo           := StrToInt(lsvProdutos.Items[i].SubItems[cCodigoVendaProduto]);
+      VendaProduto.Codigo           := StrToIntDef(lsvProdutos.Items[i].SubItems[cCodigoVendaProduto], 0);
       VendaProduto.CodigoVenda      := Venda.Codigo;
       VendaProduto.CodigoProduto    := StrToInt(lsvProdutos.Items[i].SubItems[cCodigoProduto]);
       VendaProduto.Preco            := RemoverMascara(lsvProdutos.Items[i].SubItems[cPreco]);
       VendaProduto.Quantidade       := StrToIntDef(lsvProdutos.Items[i].SubItems[cQuantidade], 0);
       VendaProduto.Produto          := TProdutoData(Produto.Pesquisar(VendaProduto.CodigoProduto));
       VendaProduto.DescricaoProduto := VendaProduto.Produto.Descricao;
+      VendaProduto.Excluir          := lsvProdutos.Items[i].StateIndex = 4;
 
       Venda.Produtos.Add(VendaProduto);
    end;
 
    Entidade.Salvar(TEntidadeData(Venda));
    EntidadeData := Venda;
+
+   PreencherCampos;
 end;
 
 end.

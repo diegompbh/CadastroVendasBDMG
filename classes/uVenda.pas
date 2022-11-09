@@ -55,7 +55,8 @@ end;
 
 procedure TVenda.Inserir(var Entidade: TEntidadeData);
 begin
-   Query.SQL.Text := ' insert into Venda values (:CodigoCliente)  '
+   Query.SQL.Text := ' insert into Venda (CodigoCliente)          '
+                   + ' values (:CodigoCliente)                    '
                    + ' select CodigoFornecedor = SCOPE_IDENTITY() ';
 
    try
