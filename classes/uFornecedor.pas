@@ -18,14 +18,16 @@ type
    protected
       procedure Inserir(var Entidade: TEntidadeData); override;
       procedure Atualizar(Entidade: TEntidadeData); override;
+      procedure ValidarObjeto(Entidade: TEntidadeData); override;
+      function CarregarObjeto: TEntidadeData; override;
    public
-      function Pesquisar(Codigo: Integer): TEntidadeData; override;
-      function Pesquisar(Pesquisa: String): TEntidadeData; override;
       function PesquisarCNPJ(CNPJ: String): Boolean;
       function CarregarFornecedores: TList;
    end;
 
 implementation
+
+uses uUtils;
 
 { TFornecedor }
 
@@ -46,7 +48,7 @@ begin
          Entidade.Codigo := Query.FieldByName('CodigoFornecedor').AsInteger;
       except
          on E: Exception do
-            Raise Exception.Create('Erro ao atualizar fornecedor.');
+            Raise Exception.Create('Erro ao inserir fornecedor.');
       end;
    finally
       Query.Close;
@@ -79,63 +81,38 @@ begin
    end;
 end;
 
-function TFornecedor.Pesquisar(Codigo: Integer): TEntidadeData;
+function TFornecedor.CarregarObjeto: TEntidadeData;
 begin
    Result := TFornecedorData.Create;
-   Query.SQL.Text := ' select NomeFantasia, RazaoSocial, CNPJ, Ativo '
-                   + ' from Fornecedor                               '
-                   + ' where CodigoFornecedor = :CodigoFornecedor    ';
-   try
-      try
-         Query.Parameters.ParamByName('CodigoFornecedor').Value := Codigo;
-         Query.Open;
 
-         if Query.IsEmpty then
-            Result.Codigo := 0
-         else
-         begin
-            Result.Codigo                            := Codigo;
-            TFornecedorData(Result).NomeFantasia     := Query.FieldByName('NomeFantasia').AsString;
-            TFornecedorData(Result).RazaoSocial      := Query.FieldByName('RazaoSocial').AsString;
-            TFornecedorData(Result).CNPJ             := Query.FieldByName('CNPJ').AsString;
-            TFornecedorData(Result).Ativo            := Query.FieldByName('Ativo').AsBoolean;
-         end;
-      except
-         on E: Exception do
-            Raise Exception.Create('Erro ao carregar fornecedor.');
-      end;
-   finally
-      Query.Close;
+   if Query.IsEmpty then
+      Result.Codigo := 0
+   else
+   begin
+      Result.Codigo                        := Query.FieldByName('CodigoFornecedor').AsInteger;
+      TFornecedorData(Result).NomeFantasia := Query.FieldByName('NomeFantasia').AsString;
+      TFornecedorData(Result).RazaoSocial  := Query.FieldByName('RazaoSocial').AsString;
+      TFornecedorData(Result).CNPJ         := Query.FieldByName('CNPJ').AsString;
+      TFornecedorData(Result).Ativo        := Query.FieldByName('Ativo').AsBoolean;
    end;
 end;
 
-function TFornecedor.Pesquisar(Pesquisa: String): TEntidadeData;
+procedure TFornecedor.ValidarObjeto(Entidade: TEntidadeData);
 begin
-   Result := TFornecedorData.Create;
-   Query.SQL.Text := ' select Top 1 CodigoFornecedor, NomeFantasia, RazaoSocial, CNPJ, Ativo '
-                   + ' from Fornecedor                                                       '
-                   + ' where NomeFantasia like ''%' + Pesquisa + '%''                        '
-                   + '    or RazaoSocial like ''%' + Pesquisa + '%''                         ';
-   try
-      try
-         Query.Open;
+   inherited;
+   if Trim(TFornecedorData(Entidade).NomeFantasia) = EmptyStr then
+      Raise TValidacaoException.Create('É necessário preencher o Nome Fantasia!');
 
-         if Query.IsEmpty then
-            Result.Codigo := 0
-         else
-         begin
-            Result.Codigo                            := Query.FieldByName('CodigoFornecedor').AsInteger;
-            TFornecedorData(Result).NomeFantasia     := Query.FieldByName('NomeFantasia').AsString;
-            TFornecedorData(Result).RazaoSocial      := Query.FieldByName('RazaoSocial').AsString;
-            TFornecedorData(Result).CNPJ             := Query.FieldByName('CNPJ').AsString;
-            TFornecedorData(Result).Ativo            := Query.FieldByName('Ativo').AsBoolean;
-         end;
-      except
-         on E: Exception do
-            Raise Exception.Create('Erro ao carregar fornecedor.');
-      end;
-   finally
-      Query.Close;
+   if Trim(TFornecedorData(Entidade).RazaoSocial) = EmptyStr then
+      Raise TValidacaoException.Create('É necessário preencher a Razão Social!');
+
+   if not IsValidCNPJ(TFornecedorData(Entidade).CNPJ) then
+      Raise TValidacaoException.Create('CNPJ inválido!');
+
+   if TFornecedorData(Entidade).Codigo = 0 then
+   begin
+      if PesquisarCNPJ(TFornecedorData(Entidade).CNPJ) then
+         Raise TValidacaoException.Create('CNPJ já cadastrado!');
    end;
 end;
 
@@ -187,7 +164,7 @@ begin
          end;
       except
          on E: Exception do
-            Raise Exception.Create('Erro ao pesquisar CNPJ.');
+            Raise Exception.Create('Erro ao carregar fornecedores.');
       end;
    finally
       Query.Close;

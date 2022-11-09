@@ -73,7 +73,12 @@ begin
 
    if MessageDlg('Confirmar exclusão do registro atual?', mtConfirmation,[mbYes, mbNo], 0) = mrYes then
    begin
-      Entidade.Excluir(StrToInt(edtCodigo.Text));
+      try
+         Entidade.Excluir(StrToInt(edtCodigo.Text));
+      except
+         on E: Exception do
+            MessageDlg('Erro ao excluir registro.', mtWarning, [mbOk], 0);
+      end;
       LimparCampos;
       AtivarCampos(False);
    end;
@@ -99,8 +104,9 @@ begin
    else
       EntidadeData := Entidade.Pesquisar(StrToInt(pesquisa));
 
-   if EntidadeData.Codigo = 0 then
+   if (EntidadeData = nil) or (EntidadeData.Codigo = 0) then
    begin
+      EntidadeData := nil;
       LimparCampos;
       MessageDlg('Registro não encontrado.', mtWarning, [mbOk], 0)
    end
@@ -112,9 +118,16 @@ end;
 
 procedure TfrmPadrao.btnSalvarClick(Sender: TObject);
 begin
-   SalvarDados;
-   PreencherCampos;
-   AtivarCampos(False);
+   try
+      SalvarDados;
+      PreencherCampos;
+      AtivarCampos(False);
+   except
+      on E: TValidacaoException do
+         MessageDlg(E.Message, mtWarning, [mbOk], 0);
+      on E: Exception do
+         MessageDlg('Erro ao salvar registro.', mtWarning, [mbOk], 0);
+   end;
 end;
 
 procedure TfrmPadrao.LimparCampos;
@@ -124,7 +137,10 @@ end;
 
 procedure TfrmPadrao.PreencherCampos;
 begin
-   edtCodigo.Text := IntToStr(EntidadeData.Codigo);
+   if EntidadeData = nil then
+      LimparCampos
+   else
+      edtCodigo.Text := IntToStr(EntidadeData.Codigo);
 end;
 
 end.

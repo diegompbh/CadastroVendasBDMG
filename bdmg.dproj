@@ -108,21 +108,28 @@
             <Form>frmPrincipal</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="uCadastroPadrao.pas">
+        <DCCReference Include="forms\uCadastroPadrao.pas">
             <Form>frmPadrao</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="classes\uEntidade.pas"/>
-        <DCCReference Include="uCadastroCliente.pas">
+        <DCCReference Include="forms\uCadastroCliente.pas">
             <Form>frmCliente</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="uCadastroFornecedor.pas">
+        <DCCReference Include="forms\uCadastroFornecedor.pas">
             <Form>frmFornecedor</Form>
+        </DCCReference>
+        <DCCReference Include="forms\uCadastroProduto.pas">
+            <Form>frmProduto</Form>
+        </DCCReference>
+        <DCCReference Include="utils\uUtils.pas"/>
+        <DCCReference Include="forms\uCadastroVenda.pas">
+            <Form>frmVenda</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="uCadastroProduto.pas">
-            <Form>frmProduto</Form>
+        <DCCReference Include="classes\uVendaProduto.pas"/>
+        <DCCReference Include="classes\uRelatorios.pas"/>
+        <DCCReference Include="forms\uRelatorio.pas">
+            <Form>frmRelatorio</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

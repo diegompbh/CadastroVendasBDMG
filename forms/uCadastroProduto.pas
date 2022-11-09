@@ -1,4 +1,4 @@
-unit uCadastroProduto;
+ï»¿unit uCadastroProduto;
 
 interface
 
@@ -13,10 +13,9 @@ type
     edtPreco: TLabeledEdit;
     cbxAtivo: TCheckBox;
     cmbFornecedor: TComboBox;
+    lblFornecedor: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
-  private
-    function RemoverMascara(Valor: String): Double;
   protected
     procedure AtivarCampos(Ativo: Boolean); override;
     procedure LimparCampos; override;
@@ -31,27 +30,15 @@ var
 
 implementation
 
-uses uPrincipal, uEntidade, uProduto, uFornecedor;
+uses uPrincipal, uUtils, uEntidade, uProduto, uFornecedor;
 
 {$R *.dfm}
 
 procedure TfrmProduto.btnSalvarClick(Sender: TObject);
 begin
-   if RemoverMascara(edtPreco.Text) <= 0 then
-   begin
-      MessageDlg('O valor do produto deve ser maior do que R$ 0,00!', mtWarning, [mbOk], 0);
-      Abort;
-   end;
-
    if cmbFornecedor.ItemIndex = -1 then
    begin
-      MessageDlg('É necessário selecionar um fornecedor!', mtWarning, [mbOk], 0);
-      Abort;
-   end;
-
-   if not TFornecedorData(cmbFornecedor.Items.Objects[cmbFornecedor.ItemIndex]).Ativo then
-   begin
-      MessageDlg('O fornecedor selecionado não está ativo!', mtWarning, [mbOk], 0);
+      MessageDlg('Ã‰ necessÃ¡rio selecionar um fornecedor!', mtWarning, [mbOk], 0);
       Abort;
    end;
 
@@ -65,15 +52,16 @@ var
    Fornecedor: TFornecedor;
 begin
    inherited;
-   Entidade := TProduto.Create(frmPrincipal.Conexao, 'Produto');
+   Entidade := TProduto.Create(frmPrincipal.Conexao, 'Produto', 'Descricao');
 
    try
-      Fornecedor := TFornecedor.Create(frmPrincipal.Conexao, 'Fornecedor');
+      Fornecedor := TFornecedor.Create(frmPrincipal.Conexao, 'Fornecedor', 'NomeFantasia');
       Fornecedores := Fornecedor.CarregarFornecedores;
 
       for FornecedorData in Fornecedores do
          cmbFornecedor.AddItem(FornecedorData.NomeFantasia, FornecedorData);
    finally
+      FreeAndNil(Fornecedor);
       FreeAndNil(Fornecedores);
    end;
 end;
@@ -93,6 +81,7 @@ begin
    edtDescricao.Clear;
    edtPreco.Clear;
    cmbFornecedor.ItemIndex := -1;
+   cmbFornecedor.Text := EmptyStr;
    cbxAtivo.Checked := False;
 end;
 
@@ -100,9 +89,9 @@ procedure TfrmProduto.PreencherCampos;
 var
    i: Integer;
 begin
+   inherited;
    if EntidadeData = nil then
       Exit;
-   inherited;
    edtDescricao.Text := TProdutoData(EntidadeData).Descricao;
    edtPreco.Text     := FormatFloat('R$ #,##0.00', TProdutoData(EntidadeData).Preco);
    cbxAtivo.Checked  := TProdutoData(EntidadeData).Ativo;
@@ -114,15 +103,6 @@ begin
    end;
 end;
 
-function TfrmProduto.RemoverMascara(Valor: String): Double;
-begin
-   Valor := StringReplace(Valor, 'R', '', [rfReplaceAll]);
-   Valor := StringReplace(Valor, '$', '', [rfReplaceAll]);
-   Valor := StringReplace(Valor, ' ', '', [rfReplaceAll]);
-
-   Result := StrToCurrDef(Valor, 0);
-end;
-
 procedure TfrmProduto.SalvarDados;
 var
    produto: TProdutoData;
@@ -132,6 +112,7 @@ begin
    produto.Descricao        := edtDescricao.Text;
    produto.Preco            := RemoverMascara(edtPreco.Text);
    produto.CodigoFornecedor := TFornecedorData(cmbFornecedor.Items.Objects[cmbFornecedor.ItemIndex]).Codigo;
+   produto.Fornecedor       := TFornecedorData(cmbFornecedor.Items.Objects[cmbFornecedor.ItemIndex]);
    produto.Ativo            := cbxAtivo.Checked;
 
    Entidade.Salvar(TEntidadeData(produto));

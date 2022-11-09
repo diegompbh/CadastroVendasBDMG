@@ -38,7 +38,7 @@ create table Venda (
 	CodigoVenda		int identity(1, 1),
 	CodigoCliente	int not null,
 	DataHora		datetime default getDate(),
-	Status			bit not null,
+	Status			bit default 0,
 	primary key (CodigoVenda),
 	foreign key (CodigoCliente) references Cliente (CodigoCliente)
 )
@@ -48,7 +48,8 @@ create table VendaProduto (
 	CodigoVendaProduto	int identity(1, 1),
 	CodigoVenda			int not null,
 	CodigoProduto		int not null,
-	Quantidade			int,
+	Quantidade			int not null,
+	Preco				decimal(15, 2) not null,
 	primary key (CodigoVendaProduto),
 	foreign key (CodigoVenda) references Venda (CodigoVenda),
 	foreign key (CodigoProduto) references Produto (CodigoProduto)

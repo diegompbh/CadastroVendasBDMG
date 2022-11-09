@@ -5,8 +5,12 @@ inherited frmProduto: TfrmProduto
   ExplicitHeight = 166
   PixelsPerInch = 96
   TextHeight = 13
-  inherited ToolBar1: TToolBar
-    ExplicitWidth = 457
+  object lblFornecedor: TLabel [0]
+    Left = 143
+    Top = 80
+    Width = 55
+    Height = 13
+    Caption = 'Fornecedor'
   end
   object edtDescricao: TLabeledEdit
     Left = 143

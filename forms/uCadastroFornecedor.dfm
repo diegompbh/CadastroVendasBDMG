@@ -5,9 +5,6 @@ inherited frmFornecedor: TfrmFornecedor
   ExplicitHeight = 177
   PixelsPerInch = 96
   TextHeight = 13
-  inherited ToolBar1: TToolBar
-    ExplicitWidth = 457
-  end
   object edtNomeFantasia: TLabeledEdit
     Left = 143
     Top = 56

@@ -21,9 +21,8 @@ object frmPadrao: TfrmPadrao
     Width = 457
     Height = 29
     Caption = 'ToolBar1'
-    Images = frmPrincipal.ImageList1
+    Images = frmPrincipal.Imagens
     TabOrder = 0
-    ExplicitWidth = 447
     object btnNovo: TToolButton
       Left = 0
       Top = 0

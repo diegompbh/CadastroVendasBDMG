@@ -2,7 +2,7 @@ unit uCliente;
 
 interface
 
-uses System.SysUtils, Data.DB, Data.Win.ADODB, uEntidade;
+uses System.SysUtils, Data.DB, Data.Win.ADODB, Classes, uEntidade;
 
 type
 
@@ -10,21 +10,24 @@ type
    public
       Nome: String;
       CPF: String;
-      Ativo: Boolean;
       DataNascimento: TDateTime;
+      Ativo: Boolean;
    end;
 
    TCliente = class(TEntidade)
    protected
       procedure Inserir(var Entidade: TEntidadeData); override;
       procedure Atualizar(Entidade: TEntidadeData); override;
+      procedure ValidarObjeto(Entidade: TEntidadeData); override;
+      function CarregarObjeto: TEntidadeData; override;
    public
-      function Pesquisar(Codigo: Integer): TEntidadeData; override;
-      function Pesquisar(Pesquisa: String): TEntidadeData; override;
       function PesquisarCPF(CPF: String): Boolean;
+      function CarregarClientes: TList;
    end;
 
 implementation
+
+uses uUtils;
 
 { TCliente }
 
@@ -38,14 +41,14 @@ begin
       try
          Query.Parameters.ParamByName('Nome').Value           := TClienteData(Entidade).Nome;
          Query.Parameters.ParamByName('CPF').Value            := TClienteData(Entidade).CPF;
-         Query.Parameters.ParamByName('Ativo').Value          := TClienteData(Entidade).Ativo;
          Query.Parameters.ParamByName('DataNascimento').Value := TClienteData(Entidade).DataNascimento;
+         Query.Parameters.ParamByName('Ativo').Value          := TClienteData(Entidade).Ativo;
          Query.Open;
 
          Entidade.Codigo := Query.FieldByName('CodigoCliente').AsInteger;
       except
          on E: Exception do
-            Raise Exception.Create('Erro ao atualizar cliente.');
+            Raise Exception.Create('Erro ao inserir cliente.');
       end;
    finally
       Query.Close;
@@ -66,8 +69,8 @@ begin
          Query.Parameters.ParamByName('CodigoCliente').Value  := Entidade.Codigo;
          Query.Parameters.ParamByName('Nome').Value           := TClienteData(Entidade).Nome;
          Query.Parameters.ParamByName('CPF').Value            := TClienteData(Entidade).CPF;
-         Query.Parameters.ParamByName('Ativo').Value          := TClienteData(Entidade).Ativo;
          Query.Parameters.ParamByName('DataNascimento').Value := TClienteData(Entidade).DataNascimento;
+         Query.Parameters.ParamByName('Ativo').Value          := TClienteData(Entidade).Ativo;
          Query.ExecSQL;
       except
          on E: Exception do
@@ -78,64 +81,37 @@ begin
    end;
 end;
 
-function TCliente.Pesquisar(Codigo: Integer): TEntidadeData;
+function TCliente.CarregarObjeto: TEntidadeData;
 begin
+   inherited;
    Result := TClienteData.Create;
-   Query.SQL.Text := ' select Nome, CPF, Ativo, DataNascimento '
-                   + ' from Cliente                            '
-                   + ' where CodigoCliente = :CodigoCliente    ';
-   try
-      try
-         Query.Parameters.ParamByName('CodigoCliente').Value := Codigo;
-         Query.Open;
 
-         if Query.IsEmpty then
-            Result.Codigo := 0
-         else
-         begin
-            Result.Codigo                       := Codigo;
-            TClienteData(Result).Nome           := Query.FieldByName('Nome').AsString;
-            TClienteData(Result).CPF            := Query.FieldByName('CPF').AsString;
-            TClienteData(Result).Ativo          := Query.FieldByName('Ativo').AsBoolean;
-            TClienteData(Result).DataNascimento := Query.FieldByName('DataNascimento').AsDateTime;
-         end;
-      except
-         on E: Exception do
-            Raise Exception.Create('Erro ao carregar cliente.');
-      end;
-   finally
-      Query.Close;
+   if Query.IsEmpty then
+      Result.Codigo := 0
+   else
+   begin
+      Result.Codigo                       := Query.FieldByName('CodigoCliente').AsInteger;
+      TClienteData(Result).Nome           := Query.FieldByName('Nome').AsString;
+      TClienteData(Result).CPF            := Query.FieldByName('CPF').AsString;
+      TClienteData(Result).DataNascimento := Query.FieldByName('DataNascimento').AsDateTime;
+      TClienteData(Result).Ativo          := Query.FieldByName('Ativo').AsBoolean;
    end;
 end;
 
-function TCliente.Pesquisar(Pesquisa: String): TEntidadeData;
+procedure TCliente.ValidarObjeto(Entidade: TEntidadeData);
 begin
-   Result := TClienteData.Create;
-   Query.SQL.Text := ' select top 1 CodigoCliente, Nome, CPF, Ativo, DataNascimento '
-                   + ' from Cliente                                                 '
-                   + ' where Nome like ''%' + Pesquisa + '%''                       ';
+   inherited;
+   if Trim(TClienteData(Entidade).Nome) = EmptyStr then
+      Raise TValidacaoException.Create('É necessário preencher o Nome!');
 
-   try
-      try
-         Query.Open;
+   if not IsValidCPF(TClienteData(Entidade).CPF) then
+      Raise TValidacaoException.Create('CPF inválido!');
 
-         if Query.IsEmpty then
-            Result.Codigo := 0
-         else
-         begin
-            Result.Codigo                       := Query.FieldByName('CodigoCliente').AsInteger;
-            TClienteData(Result).Nome           := Query.FieldByName('Nome').AsString;
-            TClienteData(Result).CPF            := Query.FieldByName('CPF').AsString;
-            TClienteData(Result).Ativo          := Query.FieldByName('Ativo').AsBoolean;
-            TClienteData(Result).DataNascimento := Query.FieldByName('DataNascimento').AsDateTime;
-         end;
-      except
-         on E: Exception do
-            Raise Exception.Create('Erro ao carregar cliente.');
-      end;
-   finally
-      Query.Close;
-   end;
+   if TClienteData(Entidade).Codigo = 0 then
+      Raise TValidacaoException.Create('CPF já cadastrado!');
+
+   if TClienteData(Entidade).DataNascimento = 0 then
+      Raise TValidacaoException.Create('Data de nascimento inválida!');
 end;
 
 function TCliente.PesquisarCPF(CPF: String): Boolean;
@@ -151,6 +127,42 @@ begin
       except
          on E: Exception do
             Raise Exception.Create('Erro ao pesquisar CPF.');
+      end;
+   finally
+      Query.Close;
+   end;
+end;
+
+function TCliente.CarregarClientes: TList;
+var
+   ClienteData: TClienteData;
+begin
+   Result := TList.Create;
+
+   Query.SQL.Text := ' select CodigoCliente, Nome, CPF, DataNascimento, Ativo '
+                   + ' from Cliente                                           '
+                   + ' order by Nome                                          ';
+
+   try
+      try
+         Query.Open;
+
+         while not Query.Eof do
+         begin
+            ClienteData := TClienteData.Create;
+            ClienteData.Codigo         := Query.FieldByName('CodigoCliente').AsInteger;
+            ClienteData.Nome           := Query.FieldByName('Nome').AsString;
+            ClienteData.CPF            := Query.FieldByName('CPF').AsString;
+            ClienteData.DataNascimento := Query.FieldByName('DataNascimento').AsDateTime;
+            ClienteData.Ativo          := Query.FieldByName('Ativo').AsBoolean;
+
+            Result.Add(ClienteData);
+
+            Query.Next;
+         end;
+      except
+         on E: Exception do
+            Raise Exception.Create('Erro ao carregar clientes.');
       end;
    finally
       Query.Close;

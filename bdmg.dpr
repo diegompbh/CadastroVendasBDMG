@@ -7,11 +7,16 @@ uses
   uProduto in 'classes\uProduto.pas',
   uVenda in 'classes\uVenda.pas',
   uPrincipal in 'uPrincipal.pas' {frmPrincipal},
-  uCadastroPadrao in 'uCadastroPadrao.pas' {frmPadrao},
+  uCadastroPadrao in 'forms\uCadastroPadrao.pas' {frmPadrao},
   uEntidade in 'classes\uEntidade.pas',
-  uCadastroCliente in 'uCadastroCliente.pas' {frmCliente},
-  uCadastroFornecedor in 'uCadastroFornecedor.pas' {frmFornecedor},
-  uCadastroProduto in 'uCadastroProduto.pas' {frmProduto};
+  uCadastroCliente in 'forms\uCadastroCliente.pas' {frmCliente},
+  uCadastroFornecedor in 'forms\uCadastroFornecedor.pas' {frmFornecedor},
+  uCadastroProduto in 'forms\uCadastroProduto.pas' {frmProduto},
+  uUtils in 'utils\uUtils.pas',
+  uCadastroVenda in 'forms\uCadastroVenda.pas' {frmVenda},
+  uVendaProduto in 'classes\uVendaProduto.pas',
+  uRelatorios in 'classes\uRelatorios.pas',
+  uRelatorio in 'forms\uRelatorio.pas' {frmRelatorio};
 
 {$R *.res}
 
